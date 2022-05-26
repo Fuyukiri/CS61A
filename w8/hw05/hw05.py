@@ -120,7 +120,7 @@ class Mint:
 class Coin:
     def __init__(self, year):
         self.year = year
-        
+
     def worth(self):
         "*** YOUR CODE HERE ***"
         age = Mint.current_year - self.year
@@ -162,6 +162,7 @@ def store_digits(n):
         current //= 10
         cnt += 1
     return Link(current, store_digits(n % (10 ** cnt)))
+
 
 def is_bst(t):
     """Returns True if the Tree t has the structure of a valid BST.
@@ -213,15 +214,13 @@ def preorder(t):
     """
     "*** YOUR CODE HERE ***"
     res = []
+
     def helper(t):
         res.append(t.label)
         for b in t.branches:
             helper(b)
     helper(t)
     return res
-
-
-
 
 
 def path_yielder(t, value):
@@ -384,7 +383,3 @@ class Tree:
                 tree_str += print_tree(b, indent + 1)
             return tree_str
         return print_tree(self).rstrip()
-
-
-t3 = Tree(6, [Tree(2, [Tree(4), Tree(1)]), Tree(7, [Tree(7), Tree(8)])])
-is_bst(t3)
