@@ -107,6 +107,9 @@ class Name(Expr):
         None
         """
         "*** YOUR CODE HERE ***"
+        if self.var_name not in env:
+            return None
+        return env[self.var_name]
 
     def __str__(self):
         return self.var_name
@@ -173,6 +176,7 @@ class CallExpr(Expr):
         Number(14)
         """
         "*** YOUR CODE HERE ***"
+        return self.operator.eval(env).apply([_.eval(env) for _ in self.operands])
 
     def __str__(self):
         function = str(self.operator)
@@ -282,6 +286,9 @@ class LambdaFunction(Value):
             raise TypeError("Oof! Cannot apply number {} to arguments {}".format(
                 comma_separated(self.parameters), comma_separated(arguments)))
         "*** YOUR CODE HERE ***"
+        env = self.parent.copy()
+        env.update({parameter : argument for parameter, argument in zip(self.parameters, arguments)})
+        return self.body.eval(env)
 
     def __str__(self):
         definition = LambdaExpr(self.parameters, self.body)
@@ -303,7 +310,11 @@ class PrimitiveFunction(Value):
             if type(arg) != Number:
                 raise TypeError("Invalid arguments {} to {}".format(
                     comma_separated(arguments), self))
-        return Number(self.operator(*[arg.value for arg in arguments]))
+        try:
+            return Number(self.operator(*[arg.value for arg in arguments]))
+        except ZeroDivisionError as e:
+            print("Error, divisor cannot be 0!")
+            print('Error message:', e)
 
     def __str__(self):
         return '<primitive function {}>'.format(self.operator.__name__)
