@@ -139,6 +139,12 @@ class Frame(object):
             raise SchemeError('Incorrect number of arguments to function call')
         # BEGIN PROBLEM 10
         "*** YOUR CODE HERE ***"
+        child_frame = Frame(self)
+        while formals != nil:
+            child_frame.define(formals.first, vals.first)
+            formals = formals.rest
+            vals = vals.rest
+        return child_frame
         # END PROBLEM 10
 
 ##############
@@ -212,6 +218,7 @@ class LambdaProcedure(Procedure):
         of values, for a lexically-scoped call evaluated in environment ENV."""
         # BEGIN PROBLEM 11
         "*** YOUR CODE HERE ***"
+        return self.env.make_child_frame(self.formals, args)
         # END PROBLEM 11
 
     def __str__(self):
@@ -281,6 +288,9 @@ def do_define_form(expressions, env):
     elif isinstance(target, Pair) and scheme_symbolp(target.first):
         # BEGIN PROBLEM 9
         "*** YOUR CODE HERE ***"
+        lambda_expression = do_lambda_form(Pair(target.rest, expressions.rest), env)
+        env.define(target.first, lambda_expression)
+        return target.first
         # END PROBLEM 9
     else:
         bad_target = target.first if isinstance(target, Pair) else target
