@@ -371,6 +371,14 @@ def do_and_form(expressions, env):
     """
     # BEGIN PROBLEM 12
     "*** YOUR CODE HERE ***"
+    if expressions == nil:
+        return True
+    val = scheme_eval(expressions.first, env)
+    if expressions.rest == nil and is_true_primitive(val):
+        return val
+    if is_true_primitive(val):
+        return do_and_form(expressions.rest, env)
+    return False
     # END PROBLEM 12
 
 
@@ -388,7 +396,12 @@ def do_or_form(expressions, env):
     6
     """
     # BEGIN PROBLEM 12
-    "*** YOUR CODE HERE ***"
+    if expressions is nil:
+        return False
+    val = scheme_eval(expressions.first, env)
+    if is_true_primitive(val):
+        return val
+    return do_or_form(expressions.rest, env)
     # END PROBLEM 12
 
 
