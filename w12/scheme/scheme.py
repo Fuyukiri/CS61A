@@ -283,12 +283,13 @@ def do_define_form(expressions, env):
         "*** YOUR CODE HERE ***"
         env.define(target, scheme_eval(expressions.rest.first, env))
         return target
-        # print(target.__str__()) 
+        # print(target.__str__())
         # END PROBLEM 5
     elif isinstance(target, Pair) and scheme_symbolp(target.first):
         # BEGIN PROBLEM 9
         "*** YOUR CODE HERE ***"
-        lambda_expression = do_lambda_form(Pair(target.rest, expressions.rest), env)
+        lambda_expression = do_lambda_form(
+            Pair(target.rest, expressions.rest), env)
         env.define(target.first, lambda_expression)
         return target.first
         # END PROBLEM 9
@@ -423,6 +424,9 @@ def do_cond_form(expressions, env):
         if is_true_primitive(test):
             # BEGIN PROBLEM 13
             "*** YOUR CODE HERE ***"
+            if clause.rest == nil:
+                return test
+            return eval_all(clause.rest, env)
             # END PROBLEM 13
         expressions = expressions.rest
 
@@ -449,6 +453,12 @@ def make_let_frame(bindings, env):
     names, values = nil, nil
     # BEGIN PROBLEM 14
     "*** YOUR CODE HERE ***"
+    while bindings != nil:
+        validate_form(bindings.first, 2, 2)
+        names = Pair(bindings.first.first, names)
+        values = Pair(eval_all(bindings.first.rest, env), values)
+        bindings = bindings.rest
+    validate_formals(names)
     # END PROBLEM 14
     return env.make_child_frame(names, values)
 
