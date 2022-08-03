@@ -587,9 +587,11 @@ class MuProcedure(Procedure):
         Scheme list BODY as its definition."""
         self.formals = formals
         self.body = body
-
+        
     # BEGIN PROBLEM 18
     "*** YOUR CODE HERE ***"
+    def make_call_frame(self, args, env):
+        return env.make_child_frame(self.formals, args)
     # END PROBLEM 18
 
     def __str__(self):
@@ -607,6 +609,9 @@ def do_mu_form(expressions, env):
     validate_formals(formals)
     # BEGIN PROBLEM 18
     "*** YOUR CODE HERE ***"
+    # print("formals: ", formals)
+    body = expressions.rest
+    return MuProcedure(formals, body)
     # END PROBLEM 18
 
 
@@ -690,6 +695,7 @@ def optimize_tail_calls(original_scheme_eval):
         result = Thunk(expr, env)
         # BEGIN PROBLEM 19
         "*** YOUR CODE HERE ***"
+        
         # END PROBLEM 19
     return optimized_eval
 
@@ -697,7 +703,7 @@ def optimize_tail_calls(original_scheme_eval):
 ################################################################
 # Uncomment the following line to apply tail call optimization #
 ################################################################
-# scheme_eval = optimize_tail_calls(scheme_eval)
+scheme_eval = optimize_tail_calls(scheme_eval)
 
 
 ####################
