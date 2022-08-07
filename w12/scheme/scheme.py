@@ -78,13 +78,14 @@ def eval_all(expressions, env):
     2
     """
     # BEGIN PROBLEM 7
-    # replace this with lines of your own code
-    if expressions == nil:
-        return None
-    while expressions.rest != nil:
-        scheme_eval(expressions.first, env)
+    val = None
+    while expressions != nil:
+        if expressions.rest != nil:
+            val = scheme_eval(expressions.first, env)
+        else:
+            val = scheme_eval(expressions.first, env, True)
         expressions = expressions.rest
-    return scheme_eval(expressions.first, env)
+    return val
     # END PROBLEM 7
 
 ################
@@ -352,9 +353,9 @@ def do_if_form(expressions, env):
     """
     validate_form(expressions, 2, 3)
     if is_true_primitive(scheme_eval(expressions.first, env)):
-        return scheme_eval(expressions.rest.first, env)
+        return scheme_eval(expressions.rest.first, env, True)
     elif len(expressions) == 3:
-        return scheme_eval(expressions.rest.rest.first, env)
+        return scheme_eval(expressions.rest.rest.first, env, True)
 
 
 def do_and_form(expressions, env):
@@ -372,14 +373,16 @@ def do_and_form(expressions, env):
     """
     # BEGIN PROBLEM 12
     "*** YOUR CODE HERE ***"
-    if expressions == nil:
-        return True
-    val = scheme_eval(expressions.first, env)
-    if expressions.rest == nil and is_true_primitive(val):
-        return val
-    if is_true_primitive(val):
-        return do_and_form(expressions.rest, env)
-    return False
+    val = True
+    while expressions != nil:
+        if expressions.rest != nil:
+            val = scheme_eval(expressions.first, env)
+        else:
+            val = scheme_eval(expressions.first, env, True)
+        if val == False:
+            return False
+        expressions = expressions.rest
+    return val
     # END PROBLEM 12
 
 
@@ -397,12 +400,15 @@ def do_or_form(expressions, env):
     6
     """
     # BEGIN PROBLEM 12
-    if expressions is nil:
-        return False
-    val = scheme_eval(expressions.first, env)
-    if is_true_primitive(val):
-        return val
-    return do_or_form(expressions.rest, env)
+    while expressions != nil:
+        if expressions.rest != nil:
+            val = scheme_eval(expressions.first, env)
+        else:
+            val = scheme_eval(expressions.first, env, True)
+        if val != False:
+            return val
+        expressions = expressions.rest
+    return False
     # END PROBLEM 12
 
 
@@ -695,7 +701,9 @@ def optimize_tail_calls(original_scheme_eval):
         result = Thunk(expr, env)
         # BEGIN PROBLEM 19
         "*** YOUR CODE HERE ***"
-        
+        while isinstance(result, Thunk):
+            result = original_scheme_eval(result.expr, result.env)
+        return result
         # END PROBLEM 19
     return optimized_eval
 
