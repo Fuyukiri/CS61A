@@ -378,16 +378,19 @@ def do_and_form(expressions, env):
     """
     # BEGIN PROBLEM 12
     "*** YOUR CODE HERE ***"
-    val = True
-    while expressions != nil:
-        if expressions.rest != nil:
-            val = scheme_eval(expressions.first, env)
+    if expressions is nil:
+        return True
+    if expressions.rest is nil:
+        val = scheme_eval(expressions.first, env, True)
+        if is_true_primitive(val):
+            return val
         else:
-            val = scheme_eval(expressions.first, env, True)
-        if val == False:
             return False
-        expressions = expressions.rest
-    return val
+    val = scheme_eval(expressions.first, env)
+    if is_true_primitive(val):
+        return do_and_form(expressions.rest, env)
+    else:
+        return False
     # END PROBLEM 12
 
 
@@ -405,15 +408,19 @@ def do_or_form(expressions, env):
     6
     """
     # BEGIN PROBLEM 12
-    while expressions != nil:
-        if expressions.rest != nil:
-            val = scheme_eval(expressions.first, env)
+    if expressions is nil:
+        return False
+    if expressions.rest is nil:
+        val = scheme_eval(expressions.first, env, True)
+        if is_false_primitive(val):
+            return False
         else:
-            val = scheme_eval(expressions.first, env, True)
-        if val != False:
             return val
-        expressions = expressions.rest
-    return False
+    val = scheme_eval(expressions.first, env)
+    if is_false_primitive(val):
+        return do_or_form(expressions.rest, env)
+    else:
+        return val
     # END PROBLEM 12
 
 
@@ -467,7 +474,7 @@ def make_let_frame(bindings, env):
     while bindings != nil:
         validate_form(bindings.first, 2, 2)
         names = Pair(bindings.first.first, names)
-        values = Pair(eval_all(bindings.first.rest, env), values)
+        values = Pair(scheme_eval(bindings.first.rest.first, env), values)
         bindings = bindings.rest
     validate_formals(names)
     # END PROBLEM 14
