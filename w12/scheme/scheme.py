@@ -40,7 +40,12 @@ def scheme_eval(expr, env, _=None):  # Optional third argument is ignored
         "*** YOUR CODE HERE ***"
         operator = scheme_eval(first, env)
         validate_procedure(operator)
-        # recursively call scheme_eval -> scheme_apply to get sub expr(Pair) values then apply to operands
+
+        # For Macro, use apply_macro to get the new expr and eval it
+        if isinstance(operator, MacroProcedure):
+            return scheme_eval(operator.apply_macro(rest, env), env)
+
+        # Recursively call scheme_eval -> scheme_apply to get sub expr(Pair) values then apply to operands
         operands = rest.map(lambda x: scheme_eval(x, env))
         return scheme_apply(operator, operands, env)
         # END PROBLEM 4
@@ -480,6 +485,18 @@ def do_define_macro(expressions, env):
     """
     # BEGIN Problem 20
     "*** YOUR CODE HERE ***"
+    validate_form(expressions, 2)    
+    if not isinstance(expressions.first, Pair):
+        raise SchemeError('non-symbol: {0}'.format(expressions.first))
+    validate_formals(expressions.first)
+
+    symbol = expressions.first.first
+    formals = expressions.first.rest
+    body = expressions.rest
+    
+    macro_procedure = MacroProcedure(formals, body, env)
+    env.define(symbol, macro_procedure)
+    return symbol
     # END Problem 20
 
 
